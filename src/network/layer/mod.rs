@@ -20,4 +20,16 @@ impl Layer {
             nodes
         }
     }
+
+
+    /// Feeds data into the layer
+    pub fn feed(&self, input: &[f64]) -> Vec<f64> {
+        let mut output = vec![0.0; self.nodes.len()];
+
+        for (index, node) in self.nodes.iter().enumerate() {
+            output[index] = node.feed(input);
+        }
+
+        output
+    }
 }

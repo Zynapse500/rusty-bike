@@ -6,7 +6,7 @@ use self::layer::Layer;
 
 /// The 'Network'
 pub struct Network {
-    layers: Vec<Layer>
+    layers: Vec<Layer>,
 }
 
 
@@ -24,8 +24,18 @@ impl Network {
             layers.push(Layer::new(shape[i - 1], shape[i]));
         }
 
-        Network {
-            layers
+        Network { layers }
+    }
+
+
+    /// Feeds data into the network and collects it's outputs
+    pub fn feed_forward(&self, input: &[f64]) -> Vec<f64> {
+        let mut data: Vec<f64> = Vec::from(input);
+
+        for layer in self.layers.iter() {
+            data = layer.feed(&data);
         }
+
+        data
     }
 }
