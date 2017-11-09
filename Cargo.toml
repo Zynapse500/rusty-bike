@@ -1,0 +1,17 @@
+[package]
+name = "rusty_bike"
+version = "0.1.0"
+authors = ["zynapse"]
+
+[lib]
+name = "rusty_bike"
+path = "src/lib.rs"
+
+
+[[bin]]
+name = "rusty_bike"
+path = "src/main.rs"
+
+
+[dependencies]
+rand = "*"
