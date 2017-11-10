@@ -73,7 +73,7 @@ impl Node {
         for (n, weight) in self.weights.iter_mut().enumerate() {
             *weight -= learning_rate * adjustment.weights[n];
         }
-        self.bias -= learning_rate * adjustment.bias;
+        self.bias -= learning_rateadjustment.bias;
     }
 
 

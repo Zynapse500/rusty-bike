@@ -13,6 +13,16 @@
             "args": [],
             "cwd": "${workspaceRoot}",
             "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Release",
+            "preLaunchTask": "build release",
+            "program": "${workspaceRoot}/target/release/rusty_bike",
+            "args": [],
+            "cwd": "${workspaceRoot}",
+            "internalConsoleOptions": "openOnSessionStart"
         }
     ]
 }

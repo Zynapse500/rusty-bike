@@ -69,15 +69,11 @@ impl Layer {
     
     /// Returns how much this layer 'wants' each input to change in order to produce the desired output
     pub fn get_desired_input(&self, activation: &[f64], desired: &[f64]) -> Vec<f64> {
-        let mut delta = vec![0.0; self.nodes[0].input_size()];
+        let mut delta = Vec::new;
 
         for (n, node) in self.nodes.iter().enumerate() {
             let error = activation[n] - desired[n];
-
-            let node_delta = node.get_input_delta(error);
-            for i in 0..node_delta.len() {
-                delta[i] += node_delta[i];
-            }
+            
         }
 
         delta
