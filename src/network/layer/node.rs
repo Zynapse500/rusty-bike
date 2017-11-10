@@ -1,6 +1,7 @@
 
 use rand::{Rng};
 
+
 /// The basic neural building block
 #[derive(Clone)]
 pub struct Node {
@@ -53,11 +54,11 @@ impl Node {
 
 
     /// Determines how this node's weights should be adjusted based on the inputs and the error
-    pub fn get_adjustment(&mut self, input: &[f64], error: f64) -> Node {
+    pub fn get_adjustment(& self, input: &[f64], error: f64) -> Node {
         let n = self.weights.len();
         let mut adjustment = Node::with_weights(n);
 
-        for (i, _) in self.weights.iter_mut().enumerate() {
+        for (i, _) in self.weights.iter().enumerate() {
             let gradient = input[i] * error;
             adjustment.weights[i] = gradient;
             adjustment.bias = error;
@@ -67,13 +68,12 @@ impl Node {
     }
 
     /// Adjusts this layer's nodes based on the values in another layer
-    pub fn adjust(&mut self, adjustment: &Node) {
-        let learning_rate = 0.001;
+    pub fn adjust(&mut self, adjustment: &Node, learning_rate: f64) {
 
         for (n, weight) in self.weights.iter_mut().enumerate() {
-            *weight -= learning_rate * adjustment.weights[n];
+            *weight -= adjustment.weights[n] * learning_rate;
         }
-        self.bias -= learning_rate * adjustment.bias;
+        self.bias -= adjustment.bias * learning_rate;
     }
 
 

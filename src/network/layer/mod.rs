@@ -46,10 +46,10 @@ impl Layer {
 
 
     /// Determines how this layer's nodes should be adjusted based on the inputs, current activation and desired output
-    pub fn get_adjustment(&mut self, input: &[f64], activation: &[f64], desired: &[f64]) -> Layer {
+    pub fn get_adjustment(& self, input: &[f64], activation: &[f64], desired: &[f64]) -> Layer {
         let mut adjustment = Layer::new(input.len(), activation.len());
 
-        for (n, node) in self.nodes.iter_mut().enumerate() {
+        for (n, node) in self.nodes.iter().enumerate() {
             let error = activation[n] - desired[n];
 
             adjustment.nodes[n] = node.get_adjustment(input, error);
@@ -60,9 +60,9 @@ impl Layer {
 
 
     /// Adjusts this layer's nodes based on the values in another layer
-    pub fn adjust(&mut self, adjustment: &Layer) {
+    pub fn adjust(&mut self, adjustment: &Layer, multiplier: f64) {
         for (n, node) in self.nodes.iter_mut().enumerate() {
-            node.adjust(&adjustment.nodes[n]);
+            node.adjust(&adjustment.nodes[n], multiplier);
         }
     }
 

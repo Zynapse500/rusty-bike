@@ -1,3 +1,6 @@
 /target/
 **/*.rs.bk
 Cargo.lock
+/data/
+training_data/train-images.mnist
+training_data/train-labels.mnist

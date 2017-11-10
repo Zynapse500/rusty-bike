@@ -52,12 +52,13 @@ impl Network {
 
 
     /// Trains this network on some input and target data
-    pub fn train(&mut self, inputs: &[Vec<f64>], targets: &[Vec<f64>]) {
+    pub fn train(&mut self, inputs: &[Vec<f64>], targets: &[Vec<f64>], learning_rate: f64) {
         if inputs.len() != targets.len() {
             panic!("Input size different from target size!");
         }
 
         let mut adjusted_layers = self.layers.clone();
+
 
         for batch in 0..inputs.len() {
 
@@ -77,20 +78,44 @@ impl Network {
             for layer_index in (1..activations.len()).rev() {
                 let input = &activations[layer_index - 1];
                 let activation = &activations[layer_index];
-                let layer = &mut self.layers[layer_index - 1];
+                let layer = &self.layers[layer_index - 1];
 
                 let adjustment = layer.get_adjustment(input, activation, &desired);
 
-                adjusted_layers[layer_index - 1].adjust(&adjustment);
+                adjusted_layers[layer_index - 1].adjust(&adjustment, learning_rate / input.len() as f64);
 
                 let desired_delta = layer.get_desired_input(activation, &desired);
                 desired.clear();
                 for i in 0..desired_delta.len() {
-                    desired.push(input[i] - desired_delta[i]);
+                    desired.push(input[i] - desired_delta[i] / inputs.len() as f64);
                 }
             }
         }
 
         self.layers = adjusted_layers;
+    }
+
+
+    /// Test the network's accuracy on some tests
+    pub fn test_accuracy<F: FnMut(&[f64], &[f64]) -> bool>(&mut self, inputs: &[Vec<f64>], targets: &[Vec<f64>], mut predicate: F) -> f64 {
+        if inputs.len() != targets.len() {
+            panic!("Input size different from target size!");
+        }
+
+        let mut correct_guesses = 0;
+
+        for batch in 0..inputs.len() {
+
+            // Compute layer activations
+            let activation = self.feed_forward(&inputs[batch]);
+
+            let correct = predicate(&activation, &targets[batch]);
+
+            if correct {
+                correct_guesses += 1;
+            }
+        }
+
+        correct_guesses as f64 / inputs.len() as f64
     }
 }

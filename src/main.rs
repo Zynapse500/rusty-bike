@@ -1,26 +1,60 @@
 
+mod mnist;
+
 extern crate rusty_bike;
 use rusty_bike::network::Network;
 
 
 fn main() {
-    let mut net = Network::with_shape(&[3, 16, 16, 2]);
+    println!("Loading MNIST database...");
+    let mnist_db = mnist::Database::new( "training_data/train-labels.mnist", "training_data/train-images.mnist");
+    println!("Done!");
+
+    let mut net = Network::with_shape(&[28*28, 128, 10]);
     net.initialize_random();
 
-    let result = net.feed_forward(&[1.0, 2.0, 3.0]);
-    println!("Result: {:?}", result);
+    {
 
-    { // Training
-        let input = &[vec![1.0, 2.0, 3.0], vec![3.0, 2.0, 1.0]];
-        let target = &[vec![1.0, 0.0], vec![0.0, 1.0]];
+        for i in 0..1_000_000 {
+            // Training
+            let (target, input) = mnist_db.random_batch(100);
 
-        for _ in 0..1_000_000 {
-            net.train(input, target);
+            // println!("Traning gen {}...", i);
+            net.train(&input, &target, 0.005);
+
+            // Test accuracy
+            if i % 100 == 0 {
+                let (target, input) = mnist_db.random_batch(1000);
+                
+                let accuracy = net.test_accuracy(&input, &target, |res, des|{
+                    argmax(res) == argmax(des)
+                });
+
+                println!("[{}] Accuracy: {:.2}%", i, accuracy * 100.0);
+            }
         }
-    }
-    
-    println!("Increasing: {:?}", net.feed_forward(&[1.0, 2.0, 3.0]));
 
-    println!("Decreasing: {:?}", net.feed_forward(&[3.0, 2.0, 1.0]));
+    }
+
+    println!("Training complete!"); 
+
+    let (target, input) = mnist_db.random_batch(1000);
+
+    let accuracy = net.test_accuracy(&input, &target, |res, des|{
+        argmax(res) == argmax(des)
+    });
+    println!("Accuracy: {:.1}%", accuracy * 100.0);
 }
 
+
+fn argmax(s: &[f64]) -> usize {
+    let mut index = 0;
+
+    for i in 1..s.len() {
+        if s[i] > s[index] {
+            index = i;
+        }
+    }
+
+    index
+}
